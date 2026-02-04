@@ -17,7 +17,7 @@
     }
     iframe {
       width: 100%;
-      height: calc(100vh - 60px);
+      height: calc(100vh - 120px);
       border: none;
     }
     .actions {
@@ -31,42 +31,57 @@
       border: none;
       border-radius: 4px;
       cursor: pointer;
+      margin: 0 6px;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    Popup Login → iframe load test
-  </header>
+<header>
+  Popup Login → iframe load test (POC)
+</header>
 
-  <div class="actions">
-    <button onclick="loginViaPopup()">Login via Popup</button>
-    <button onclick="loadIframe()">Load Community in iframe</button>
-  </div>
+<div class="actions">
+  <button onclick="loadCommunity()">Open Community</button>
+</div>
 
-  <iframe id="sfFrame"></iframe>
+<iframe id="sfFrame"></iframe>
 
-  <script>
-    let popupRef;
+<script>
+  let iframeLoaded = false;
 
-    function loginViaPopup() {
-      popupRef = window.open(
-        "https://orgfarm-1da6614a1f-dev-ed.develop.my.site.com",
-        "sfLogin",
-        "width=1200,height=800"
-      );
+  function loadCommunity() {
+    iframeLoaded = false;
 
-      if (!popupRef) {
-        alert("Popup blocked");
+    const iframe = document.getElementById("sfFrame");
+    iframe.src = "https://orgfarm-1da6614a1f-dev-ed.develop.my.site.com";
+
+    // If iframe does not load within X seconds, assume not logged in
+    setTimeout(() => {
+      if (!iframeLoaded) {
+        console.log("Iframe not loaded → opening login popup");
+        openLoginPopup();
       }
-    }
+    }, 3000);
+  }
 
-    function loadIframe() {
-      document.getElementById("sfFrame").src =
-        "https://orgfarm-1da6614a1f-dev-ed.develop.my.site.com";
+  document.getElementById("sfFrame").onload = function () {
+    iframeLoaded = true;
+    console.log("Iframe loaded (session may exist)");
+  };
+
+  function openLoginPopup() {
+    const popup = window.open(
+      "https://orgfarm-1da6614a1f-dev-ed.develop.my.site.com",
+      "sfLogin",
+      "width=1200,height=800"
+    );
+
+    if (!popup) {
+      alert("Popup blocked. Please allow popups.");
     }
-  </script>
+  }
+</script>
 
 </body>
 </html>
