@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Salesforce SSO POC</title>
+  <title>Salesforce Popup + Iframe POC</title>
+
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f4f6f9;
     }
     header {
       background: #1f2a44;
@@ -15,59 +15,58 @@
       padding: 12px;
       text-align: center;
     }
-    .container {
-      height: calc(100vh - 50px);
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    iframe {
+      width: 100%;
+      height: calc(100vh - 60px);
+      border: none;
+    }
+    .actions {
+      padding: 12px;
+      text-align: center;
     }
     button {
-      padding: 14px 24px;
-      font-size: 16px;
+      padding: 10px 20px;
       background: #0176d3;
       color: white;
       border: none;
       border-radius: 4px;
       cursor: pointer;
     }
-    button:hover {
-      background: #014f9e;
-    }
   </style>
 </head>
 <body>
 
   <header>
-    3rd Party Portal – Salesforce SSO (POC)
+    Popup Login → iframe load test
   </header>
-  <iframe
-    src="https://orgfarm-1da6614a1f-dev-ed.develop.my.site.com"
-    title="Salesforce Site">
-  </iframe>
-  <div class="container">
-    <button onclick="openSalesforcePopup()">
-      Open Salesforce Community
-    </button>
+
+  <div class="actions">
+    <button onclick="loginViaPopup()">Login via Popup</button>
+    <button onclick="loadIframe()">Load Community in iframe</button>
   </div>
 
+  <iframe id="sfFrame"></iframe>
+
   <script>
-    function openSalesforcePopup() {
-      const popup = window.open(
+    let popupRef;
+
+    function loginViaPopup() {
+      popupRef = window.open(
         "https://orgfarm-1da6614a1f-dev-ed.develop.my.site.com",
-        "salesforceCommunity",
-        "width=1200,height=800,menubar=no,toolbar=no,resizable=yes"
+        "sfLogin",
+        "width=1200,height=800"
       );
 
-      if (!popup) {
-        alert("Popup blocked. Please allow popups for this site.");
+      if (!popupRef) {
+        alert("Popup blocked");
       }
+    }
+
+    function loadIframe() {
+      document.getElementById("sfFrame").src =
+        "https://orgfarm-1da6614a1f-dev-ed.develop.my.site.com";
     }
   </script>
 
 </body>
 </html>
-
-
-
-
-
