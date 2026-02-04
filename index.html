@@ -28,15 +28,31 @@
       border: none;
     }
 
-    #loginOverlay {
+    /* Shared overlay base */
+    .overlay {
       position: absolute;
       inset: 0;
-      background: rgba(255,255,255,0.95);
       display: none;
       justify-content: center;
       align-items: center;
       flex-direction: column;
       z-index: 10;
+      background: rgba(255,255,255,0.95);
+    }
+
+    /* Loading spinner */
+    .spinner {
+      width: 48px;
+      height: 48px;
+      border: 5px solid #ddd;
+      border-top: 5px solid #0176d3;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 16px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
 
     button {
@@ -62,13 +78,22 @@
 </header>
 
 <div id="container">
+
   <iframe id="sfFrame"></iframe>
 
-  <div id="loginOverlay">
+  <!-- Loading overlay -->
+  <div id="loadingOverlay" class="overlay">
+    <div class="spinner"></div>
+    <div>Loading Salesforce Community…</div>
+  </div>
+
+  <!-- Login overlay -->
+  <div id="loginOverlay" class="overlay">
     <h3>Login required</h3>
     <p>Please login to access Salesforce Community</p>
     <button onclick="openLoginPopup()">Login</button>
   </div>
+
 </div>
 
 <script>
@@ -76,39 +101,35 @@
     "https://orgfarm-1da6614a1f-dev-ed.develop.my.site.com";
 
   const iframe = document.getElementById("sfFrame");
-  const overlay = document.getElementById("loginOverlay");
+  const loadingOverlay = document.getElementById("loadingOverlay");
+  const loginOverlay = document.getElementById("loginOverlay");
 
-  let iframeLoaded = false;
+  // Initial state → show loading
+  loadingOverlay.style.display = "flex";
+  loginOverlay.style.display = "none";
 
-  // 1️⃣ Attempt to auto-load Community
+  // Attempt to load Community
   iframe.src = COMMUNITY_URL;
 
-  // 2️⃣ If iframe loads, hide login overlay
+  // We do NOT trust iframe.onload, but we can log it
   iframe.onload = () => {
-    iframeLoaded = true;
-    overlay.style.display = "none";
-    console.log("Iframe loaded (session may exist)");
+    console.log("iframe.onload fired (not reliable for Salesforce)");
   };
 
-  // 3️⃣ If iframe does NOT load in time → show login
+  // Decision after timeout
   setTimeout(() => {
-    if (!iframeLoaded) {
-      console.log("Iframe blocked or not logged in → show login");
-      overlay.style.display = "flex";
-    }
-  }, 3000); // adjust if needed
+    // Assume iframe is blocked or login required
+    loadingOverlay.style.display = "none";
+    loginOverlay.style.display = "flex";
+    console.log("Iframe likely blocked → showing login");
+  }, 3000); // adjust delay if needed
 
-  // 4️⃣ Popup login
   function openLoginPopup() {
-    const popup = window.open(
+    window.open(
       COMMUNITY_URL,
       "sfLogin",
       "width=1200,height=800"
     );
-
-    if (!popup) {
-      alert("Popup blocked. Please allow popups.");
-    }
   }
 </script>
 
