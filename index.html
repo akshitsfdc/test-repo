@@ -17,9 +17,16 @@
       text-align: center;
     }
 
+    #actions {
+      padding: 10px;
+      text-align: center;
+      background: #f4f6f9;
+      border-bottom: 1px solid #ddd;
+    }
+
     #container {
       position: relative;
-      height: calc(100vh - 60px);
+      height: calc(100vh - 120px);
     }
 
     iframe {
@@ -56,14 +63,14 @@
     }
 
     button {
-      padding: 12px 24px;
-      font-size: 16px;
+      padding: 10px 20px;
+      font-size: 14px;
       background: #0176d3;
       color: white;
       border: none;
       border-radius: 4px;
       cursor: pointer;
-      margin-top: 12px;
+      margin: 4px;
     }
 
     button:hover {
@@ -76,6 +83,11 @@
 <header>
   Auto-load Community → Login fallback (POC)
 </header>
+
+<div id="actions">
+  <button onclick="reloadCommunity()">Reload Community</button>
+  <button onclick="openLoginPopup()">Login</button>
+</div>
 
 <div id="container">
 
@@ -104,25 +116,35 @@
   const loadingOverlay = document.getElementById("loadingOverlay");
   const loginOverlay = document.getElementById("loginOverlay");
 
-  // Initial state → show loading
-  loadingOverlay.style.display = "flex";
-  loginOverlay.style.display = "none";
+  let decisionTimer = null;
 
-  // Attempt to load Community
-  iframe.src = COMMUNITY_URL;
+  function startLoad() {
+    // Reset UI
+    loadingOverlay.style.display = "flex";
+    loginOverlay.style.display = "none";
 
-  // We do NOT trust iframe.onload, but we can log it
-  iframe.onload = () => {
-    console.log("iframe.onload fired (not reliable for Salesforce)");
-  };
+    // Stop any previous timer
+    if (decisionTimer) {
+      clearTimeout(decisionTimer);
+    }
 
-  // Decision after timeout
-  setTimeout(() => {
-    // Assume iframe is blocked or login required
-    loadingOverlay.style.display = "none";
-    loginOverlay.style.display = "flex";
-    console.log("Iframe likely blocked → showing login");
-  }, 3000); // adjust delay if needed
+    // Force iframe reload
+    iframe.src = "about:blank";
+    setTimeout(() => {
+      iframe.src = COMMUNITY_URL;
+    }, 50);
+
+    // Decide after timeout
+    decisionTimer = setTimeout(() => {
+      loadingOverlay.style.display = "none";
+      loginOverlay.style.display = "flex";
+      console.log("Iframe likely blocked → showing login");
+    }, 3000);
+  }
+
+  function reloadCommunity() {
+    startLoad();
+  }
 
   function openLoginPopup() {
     window.open(
@@ -131,6 +153,9 @@
       "width=1200,height=800"
     );
   }
+
+  // Initial auto-load on page open
+  startLoad();
 </script>
 
 </body>
