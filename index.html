@@ -100,11 +100,11 @@
   </div>
 
   <!-- Login overlay -->
-  <div id="loginOverlay" class="overlay">
+  <!--<div id="loginOverlay" class="overlay">
     <h3>Login required</h3>
     <p>Please login to access Salesforce Community</p>
     <button onclick="openLoginPopup()">Login</button>
-  </div>
+  </div>-->
 
 </div>
 
@@ -114,14 +114,14 @@
 
   const iframe = document.getElementById("sfFrame");
   const loadingOverlay = document.getElementById("loadingOverlay");
-  const loginOverlay = document.getElementById("loginOverlay");
+  // const loginOverlay = document.getElementById("loginOverlay");
 
   let decisionTimer = null;
 
   function startLoad() {
     // Reset UI
-    loadingOverlay.style.display = "flex";
-    loginOverlay.style.display = "none";
+    // loadingOverlay.style.display = "flex";
+    // loginOverlay.style.display = "none";
 
     // Stop any previous timer
     if (decisionTimer) {
@@ -160,4 +160,5 @@
 
 </body>
 </html>
+
 
