@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-
   <meta charset="UTF-8">
-  <title>Salesforce iFrame POC</title>
+  <title>Salesforce SSO POC</title>
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
+      background: #f4f6f9;
     }
     header {
       background: #1f2a44;
@@ -17,26 +15,44 @@
       padding: 12px;
       text-align: center;
     }
-    iframe {
-      width: 100%;
+    .container {
       height: calc(100vh - 50px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    button {
+      padding: 14px 24px;
+      font-size: 16px;
+      background: #0176d3;
+      color: white;
       border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #014f9e;
     }
   </style>
 </head>
 <body>
 
   <header>
-    3rd Party Portal – Salesforce Embedded (POC)
+    3rd Party Portal – Salesforce SSO (POC)
   </header>
 
-  <iframe
-    src="https://orgfarm-1da6614a1f-dev-ed.develop.my.site.com"
-    title="Salesforce Site">
-  </iframe>
+  <div class="container">
+    <button onclick="openSalesforce()">
+      Open Salesforce Community
+    </button>
+  </div>
+
+  <script>
+    function openSalesforce() {
+      window.location.href =
+        "https://orgfarm-1da6614a1f-dev-ed.develop.my.site.com";
+    }
+  </script>
 
 </body>
 </html>
-
-
-
