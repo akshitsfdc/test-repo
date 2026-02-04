@@ -2,77 +2,106 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Salesforce Popup + Iframe POC</title>
+  <title>Salesforce Auto Load → Login Fallback (POC)</title>
 
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
     }
+
     header {
       background: #1f2a44;
       color: white;
       padding: 12px;
       text-align: center;
     }
+
+    #container {
+      position: relative;
+      height: calc(100vh - 60px);
+    }
+
     iframe {
       width: 100%;
-      height: calc(100vh - 120px);
+      height: 100%;
       border: none;
     }
-    .actions {
-      padding: 12px;
-      text-align: center;
+
+    #loginOverlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.95);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      z-index: 10;
     }
+
     button {
-      padding: 10px 20px;
+      padding: 12px 24px;
+      font-size: 16px;
       background: #0176d3;
       color: white;
       border: none;
       border-radius: 4px;
       cursor: pointer;
-      margin: 0 6px;
+      margin-top: 12px;
+    }
+
+    button:hover {
+      background: #014f9e;
     }
   </style>
 </head>
 <body>
 
 <header>
-  Popup Login → iframe load test (POC)
+  Auto-load Community → Login fallback (POC)
 </header>
 
-<div class="actions">
-  <button onclick="loadCommunity()">Open Community</button>
+<div id="container">
+  <iframe id="sfFrame"></iframe>
+
+  <div id="loginOverlay">
+    <h3>Login required</h3>
+    <p>Please login to access Salesforce Community</p>
+    <button onclick="openLoginPopup()">Login</button>
+  </div>
 </div>
 
-<iframe id="sfFrame"></iframe>
-
 <script>
+  const COMMUNITY_URL =
+    "https://orgfarm-1da6614a1f-dev-ed.develop.my.site.com";
+
+  const iframe = document.getElementById("sfFrame");
+  const overlay = document.getElementById("loginOverlay");
+
   let iframeLoaded = false;
 
-  function loadCommunity() {
-    iframeLoaded = false;
+  // 1️⃣ Attempt to auto-load Community
+  iframe.src = COMMUNITY_URL;
 
-    const iframe = document.getElementById("sfFrame");
-    iframe.src = "https://orgfarm-1da6614a1f-dev-ed.develop.my.site.com";
-
-    // If iframe does not load within X seconds, assume not logged in
-    setTimeout(() => {
-      if (!iframeLoaded) {
-        console.log("Iframe not loaded → opening login popup");
-        openLoginPopup();
-      }
-    }, 3000);
-  }
-
-  document.getElementById("sfFrame").onload = function () {
+  // 2️⃣ If iframe loads, hide login overlay
+  iframe.onload = () => {
     iframeLoaded = true;
+    overlay.style.display = "none";
     console.log("Iframe loaded (session may exist)");
   };
 
+  // 3️⃣ If iframe does NOT load in time → show login
+  setTimeout(() => {
+    if (!iframeLoaded) {
+      console.log("Iframe blocked or not logged in → show login");
+      overlay.style.display = "flex";
+    }
+  }, 3000); // adjust if needed
+
+  // 4️⃣ Popup login
   function openLoginPopup() {
     const popup = window.open(
-      "https://orgfarm-1da6614a1f-dev-ed.develop.my.site.com",
+      COMMUNITY_URL,
       "sfLogin",
       "width=1200,height=800"
     );
