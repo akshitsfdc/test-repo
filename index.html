@@ -48,15 +48,20 @@
   </div>
 
   <script>
-    function openSalesforce() {
-      window.open(
+    function openSalesforcePopup() {
+      const popup = window.open(
         "https://orgfarm-1da6614a1f-dev-ed.develop.my.site.com",
         "salesforceCommunity",
-        "width=1200,height=800,menubar=no,toolbar=no"
+        "width=1200,height=800,menubar=no,toolbar=no,resizable=yes"
       );
+
+      if (!popup) {
+        alert("Popup blocked. Please allow popups for this site.");
+      }
     }
   </script>
 
 </body>
 </html>
+
 
