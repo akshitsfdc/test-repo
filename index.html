@@ -1,32 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Salesforce Auto Load → Login Fallback (POC)</title>
+  <meta charset="UTF-8" />
+  <title>Norton Hub – Salesforce Embed</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+      background: #f4f5f7;
     }
 
-    header {
-      background: #1f2a44;
+    /* LEFT SIDEBAR */
+    .sidebar {
+      width: 90px;
+      background: #ffffff;
+      border-right: 1px solid #ddd;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 20px;
+    }
+
+    .menu-btn {
+      width: 100%;
+      padding: 14px 0;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 12px;
+      color: #333;
+      transition: background 0.2s;
+    }
+
+    .menu-btn:hover {
+      background: #eef1f4;
+    }
+
+    /* MAIN AREA */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* TOP BAR */
+    .topbar {
+      height: 60px;
+      background: #2f3f4a;
       color: white;
-      padding: 12px;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      justify-content: space-between;
     }
 
-    #actions {
-      padding: 10px;
-      text-align: center;
-      background: #f4f6f9;
-      border-bottom: 1px solid #ddd;
+    .topbar .title {
+      font-size: 20px;
+      font-weight: bold;
     }
 
-    #container {
+    .topbar .user {
+      font-size: 14px;
+    }
+
+    /* CONTENT */
+    .content {
+      flex: 1;
       position: relative;
-      height: calc(100vh - 120px);
+      background: #fff;
     }
 
     iframe {
@@ -35,131 +85,55 @@
       border: none;
     }
 
-    /* Shared overlay base */
-    .overlay {
+    .placeholder {
       position: absolute;
       inset: 0;
-      display: none;
-      justify-content: center;
+      display: flex;
       align-items: center;
-      flex-direction: column;
-      z-index: 10;
-      background: rgba(255,255,255,0.95);
-    }
-
-    /* Loading spinner */
-    .spinner {
-      width: 48px;
-      height: 48px;
-      border: 5px solid #ddd;
-      border-top: 5px solid #0176d3;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-bottom: 16px;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    button {
-      padding: 10px 20px;
-      font-size: 14px;
-      background: #0176d3;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      margin: 4px;
-    }
-
-    button:hover {
-      background: #014f9e;
+      justify-content: center;
+      font-size: 18px;
+      color: #777;
     }
   </style>
 </head>
+
 <body>
 
-<header>
-  Auto-load Community → Login fallback (POC)
-</header>
-
-<div id="actions">
-  <button onclick="reloadCommunity()">Reload Community</button>
-  <button onclick="openLoginPopup()">Login</button>
-</div>
-
-<div id="container">
-
-  <iframe id="sfFrame"  width="400px" height= "200px" ></iframe>
-
-  <!-- Loading overlay -->
-  <div id="loadingOverlay" class="overlay">
-    <div class="spinner"></div>
-    <div>Loading Salesforce Community…</div>
+  <!-- LEFT PANEL -->
+  <div class="sidebar">
+    <button class="menu-btn" onclick="loadSalesforce()">
+      Salesforce
+    </button>
   </div>
 
-  <!-- Login overlay -->
-  <!--<div id="loginOverlay" class="overlay">
-    <h3>Login required</h3>
-    <p>Please login to access Salesforce Community</p>
-    <button onclick="openLoginPopup()">Login</button>
-  </div>-->
+  <!-- MAIN PANEL -->
+  <div class="main">
+    <div class="topbar">
+      <div class="title">The Norton Hub</div>
+      <div class="user">Dealerown ▼</div>
+    </div>
 
-</div>
+    <div class="content">
+      <div class="placeholder" id="placeholder">
+        Click Salesforce to load Partner Community
+      </div>
 
-<script>
-  const COMMUNITY_URL =
-    "https://orgfarm-1da6614a1f-dev-ed.develop.my.site.com";
+      <iframe
+        id="contentFrame"
+        sandbox="allow-same-origin allow-scripts allow-forms allow-popups"
+      ></iframe>
+    </div>
+  </div>
 
-  const iframe = document.getElementById("sfFrame");
-  const loadingOverlay = document.getElementById("loadingOverlay");
-  // const loginOverlay = document.getElementById("loginOverlay");
+  <script>
+    function loadSalesforce() {
+      const iframe = document.getElementById('contentFrame');
+      const placeholder = document.getElementById('placeholder');
 
-  let decisionTimer = null;
-
-  function startLoad() {
-    // Reset UI
-    // loadingOverlay.style.display = "flex";
-    // loginOverlay.style.display = "none";
-
-    // Stop any previous timer
-    if (decisionTimer) {
-      clearTimeout(decisionTimer);
+      placeholder.style.display = 'none';
+      iframe.src = 'https://orgfarm-1da6614a1f-dev-ed.develop.my.site.com';
     }
-
-    // Force iframe reload
-    iframe.src = "about:blank";
-    setTimeout(() => {
-      iframe.src = COMMUNITY_URL;
-    }, 50);
-
-    // Decide after timeout
-    // decisionTimer = setTimeout(() => {
-    //   loadingOverlay.style.display = "none";
-    //   loginOverlay.style.display = "flex";
-    //   console.log("Iframe likely blocked → showing login");
-    // }, 3000);
-  }
-
-  function reloadCommunity() {
-    startLoad();
-  }
-
-  function openLoginPopup() {
-    window.open(
-      COMMUNITY_URL,
-      "sfLogin",
-      "width=1200,height=800"
-    );
-  }
-
-  // Initial auto-load on page open
-  startLoad();
-</script>
+  </script>
 
 </body>
 </html>
-
-
-
