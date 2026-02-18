@@ -376,16 +376,25 @@ const WEB_TO_LEAD_URL =
     }
   }
 
-  function sendLead(data) {
+  function sendLead(data, index) {
+    const iframeName = "sf_target_" + Date.now() + "_" + index;
+
+    // create unique iframe
+    const iframe = document.createElement("iframe");
+    iframe.name = iframeName;
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
+
+    // create form
     const f = document.createElement("form");
     f.method = "POST";
-    f.target = "hidden_sf_target";
+    f.target = iframeName;
     f.action = WEB_TO_LEAD_URL;
 
     data.oid = ACTIVE.ORG_ID;
     data.retURL = "about:blank";
 
-    Object.entries(data).forEach(([k,v]) => {
+    Object.entries(data).forEach(([k, v]) => {
       if (v !== undefined) {
         const i = document.createElement("input");
         i.type = "hidden";
@@ -397,7 +406,12 @@ const WEB_TO_LEAD_URL =
 
     document.body.appendChild(f);
     f.submit();
-    f.remove();
+
+    // cleanup
+    setTimeout(() => {
+      f.remove();
+      iframe.remove();
+    }, 3000);
   }
 
   function flushQueue() {
@@ -408,7 +422,7 @@ const WEB_TO_LEAD_URL =
 
     const batch = queue.splice(0, BATCH);
     batch.forEach((item, i) =>
-      setTimeout(() => sendLead(item), i * 400)
+      setTimeout(() => sendLead(item, i), i * 600)
     );
 
     saveQueue(queue);
