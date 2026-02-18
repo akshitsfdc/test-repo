@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Norton Lead Capture Form</title>
+
+<style>
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  background: linear-gradient(135deg, #f3f6ff, #e6ecff);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.page-wrapper {
+  width: 100%;
+  max-width: 560px;
+  padding: 24px 16px;
+}
+
+h1 {
+  margin-bottom: 12px;
+  font-size: 22px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Card */
+.card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow:
+    0 15px 40px rgba(15,23,42,.12),
+    0 3px 6px rgba(15,23,42,.08);
+}
+
+/* Header */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.dot.online { background: #22c55e; }
+.dot.offline { background: #ef4444; }
+
+/* Toggle */
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+}
+
+.toggle-switch {
+  width: 38px;
+  height: 20px;
+  background: #d4d4d8;
+  border-radius: 999px;
+  position: relative;
+  cursor: pointer;
+}
+.toggle-switch::after {
+  content: "";
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform .2s;
+}
+.toggle-switch.on { background: #4f46e5; }
+.toggle-switch.on::after { transform: translateX(18px); }
+
+/* Form */
+label {
+  display: block;
+  font-size: 13px;
+  margin-top: 14px;
+  font-weight: 500;
+}
+
+label.required::after {
+  content: " *";
+  color: #ef4444;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+select  {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 6px;
+  border-radius: 10px;
+  border: 1px solid #d4d4d8;
+  font-size: 14px;
+}
+select {
+  padding-right: 40px; /* space for arrow */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%236b7280' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+}
+input:focus,
+select:focus {
+  outline: none;
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 2px rgba(79,70,229,.25);
+}
+
+/* Consent section */
+.consent-section {
+  margin-top: 22px;
+  padding-top: 14px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.consent-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.consent-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px 16px;
+}
+
+.consent-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+/* Footer */
+.form-footer {
+  margin-top: 22px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn {
+  background: linear-gradient(135deg,#4f46e5,#6366f1);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Pending sync */
+.pending-bar {
+  margin-top: 14px;
+  font-size: 12px;
+  color: #1f2937;
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+
+.sync-icon {
+  width: 18px;
+  height: 18px;
+  stroke: #000;
+  fill: none;
+  stroke-width: 2;
+  cursor: pointer;
+}
+
+.sync-icon.rotating {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+</style>
+</head>
+
+<body>
+<div class="page-wrapper">
+
+<h1>Norton Lead Capture Form</h1>
+
+<div class="card">
+
+  <div class="card-header">
+    <strong>Lead Details</strong>
+    <div class="status-row">
+      <span id="dot" class="dot"></span>
+      <span id="netText"></span>
+      <div class="toggle">
+        Auto-sync
+        <div id="autoToggle" class="toggle-switch"></div>
+      </div>
+    </div>
+  </div>
+
+  <form id="leadForm" method="POST">
+
+    <!-- Salesforce identification -->
+    <input type="hidden" name="Lead_Source_Detail__c" value="NORTON_WEB_To_LEAD_CAPTURE">    
+
+    <label>First Name</label>
+    <input name="first_name" type="text">
+
+    <label class="required">Last Name</label>
+    <input name="last_name" type="text" required>
+
+    <label class="required">Email</label>
+    <input name="email" type="email" required>
+
+    <label>Phone</label>
+    <input name="phone" type="tel" pattern="^\+?[0-9]{7,15}$" maxlength="16" inputmode="tel">
+
+    <label >Enquiry Model</label>
+    <select name="Web_To_Lead_Enquiry_Model_Id__c" >
+      <option value="">-- Select Product --</option>
+    </select>
+
+    <label>Enquiry Type</label>
+    <select name="Enquiry_Type__c">
+      <option value="">-- Select Enquiry Type --</option>
+      <option value="Enquiry">Enquiry</option>
+      <option value="Waitlist">Waitlist</option>
+      <option value="Test Ride">Test Ride</option>
+    </select>
+
+    <div class="consent-section">
+      <div class="consent-title">Communication Preferences</div>
+      <div class="consent-grid">
+        <label class="consent-item"><input type="checkbox" name="Meta_Emai_Consent__c" value="true"> Email</label>
+        <label class="consent-item"><input type="checkbox" name="Meta_Phone_Consent__c" value="true"> Phone</label>
+        <label class="consent-item"><input type="checkbox" name="Meta_SMS_Consent__c" value="true"> SMS</label>
+        <label class="consent-item"><input type="checkbox" name="Meta_WhatsApp_Consent__c" value="true"> WhatsApp</label>
+        <label class="consent-item"><input type="checkbox" name="Meta_RCS_Consent__c" value="true"> RCS</label>
+      </div>
+    </div>
+
+    <div class="form-footer">
+      <button class="btn">Submit Lead</button>
+    </div>
+  </form>
+
+  <div id="pendingBar" class="pending-bar">
+    <span id="pendingText"></span>
+    <svg id="syncBtn" class="sync-icon" viewBox="0 0 24 24">
+      <path d="M3 12a9 9 0 0 1 15.5-6.36"/>
+      <polyline points="18 3 18 6 15 6"/>
+      <path d="M21 12a9 9 0 0 1-15.5 6.36"/>
+      <polyline points="6 21 6 18 9 18"/>
+    </svg>
+  </div>
+
+</div>
+
+<iframe name="hidden_sf_target" style="display:none;"></iframe>
+</div>
+
+<script>
+/* ========= SALESFORCE ENV CONFIG ========= */
+const SF_ENV = "DEV"; 
+
+const SF_CONFIG = {
+   DEV: {
+    BASE_URL: "https://test.salesforce.com",
+    ORG_ID: "00DQ1000001wi6X"
+  },
+  UAT: {
+    BASE_URL: "https://test.salesforce.com",
+    ORG_ID: "00DS90000011ARN"
+  },
+  PROD: {
+    BASE_URL: "https://login.salesforce.com",
+    ORG_ID: "00D8d00000Apx47"
+  }
+};
+
+const MODEL_CONFIG = {
+  DEV: [
+    { label: "Manx", id: "01tSr00000BCqJ4IAL" },
+    { label: "Manx First Edition", id: "01tQ100000DYTmTIAX" },
+    { label: "Manx R", id: "01tSr00000BCrWrIAL" },
+    { label: "Manx R First Edition", id: "01tSr00000BCrVFIA1" },
+    { label: "Atlas", id: "01tSr00000BCqKgIAL" },
+    { label: "Atlas GT", id: "01tSr00000BCrbhIAD" }
+  ],
+  UAT: [
+    { label: "Manx", id: "01tS900000FHAgtIAH" },
+    { label: "Manx First Edition", id: "01tS900000FJGA7IAP" },
+    { label: "Manx R", id: "01tS900000FHFq1IAH" },
+    { label: "Manx R First Edition", id: "01tS900000FHFoPIAX" },
+    { label: "Atlas", id: "01tS900000FHFy5IAH" },
+    { label: "Atlas GT", id: "01tS900000FHFurIAH" }
+  ],
+  PROD: [
+    { label: "Manx", id: "01tSr00000BCqJ4IAL" },
+    { label: "Manx First Edition", id: "01tSr00000BEH4HIAX" },
+    { label: "Manx R", id: "01tSr00000BCrWrIAL" },
+    { label: "Manx R First Edition", id: "01tSr00000BCrVFIA1" },
+    { label: "Atlas", id: "01tSr00000BCqKgIAL" },
+    { label: "Atlas GT", id: "01tSr00000BCrbhIAD" }
+  ]
+};
+
+const ACTIVE = SF_CONFIG[SF_ENV];
+const WEB_TO_LEAD_URL =
+  ACTIVE.BASE_URL + "/servlet/servlet.WebToLead?encoding=UTF-8";
+
+/* ========= OFFLINE + AUTO SYNC ========= */
+(() => {
+  const QUEUE_KEY = "pendingSfLeads";
+  const AUTO_KEY = "autoSync";
+  const BATCH = 10;
+
+  const dot = document.getElementById("dot");
+  const netText = document.getElementById("netText");
+  const autoToggle = document.getElementById("autoToggle");
+  const pendingBar = document.getElementById("pendingBar");
+  const pendingText = document.getElementById("pendingText");
+  const syncBtn = document.getElementById("syncBtn");
+  const form = document.getElementById("leadForm");
+
+  form.action = WEB_TO_LEAD_URL;
+
+  let autoSync = localStorage.getItem(AUTO_KEY);
+  autoSync = autoSync === null ? true : autoSync === "true";
+
+  const loadQueue = () => JSON.parse(localStorage.getItem(QUEUE_KEY) || "[]");
+  const saveQueue = q => localStorage.setItem(QUEUE_KEY, JSON.stringify(q));
+
+  function updateUI() {
+    const online = navigator.onLine;
+    dot.className = "dot " + (online ? "online" : "offline");
+    netText.textContent = online ? "Online" : "Offline";
+
+    const count = loadQueue().length;
+    if (count > 0) {
+      pendingBar.style.display = "flex";
+      pendingText.textContent = `${count} offline lead(s) pending`;
+      syncBtn.style.display = online ? "inline" : "none";
+    } else {
+      pendingBar.style.display = "none";
+    }
+  }
+
+  function sendLead(data) {
+    const f = document.createElement("form");
+    f.method = "POST";
+    f.target = "hidden_sf_target";
+    f.action = WEB_TO_LEAD_URL;
+
+    data.oid = ACTIVE.ORG_ID;
+    data.retURL = "about:blank";
+
+    Object.entries(data).forEach(([k,v]) => {
+      if (v !== undefined) {
+        const i = document.createElement("input");
+        i.type = "hidden";
+        i.name = k;
+        i.value = v;
+        f.appendChild(i);
+      }
+    });
+
+    document.body.appendChild(f);
+    f.submit();
+    f.remove();
+  }
+
+  function flushQueue() {
+    const queue = loadQueue();
+    if (!queue.length || !navigator.onLine) return;
+
+    syncBtn.classList.add("rotating");
+
+    const batch = queue.splice(0, BATCH);
+    batch.forEach((item, i) =>
+      setTimeout(() => sendLead(item), i * 400)
+    );
+
+    saveQueue(queue);
+
+    setTimeout(() => {
+      syncBtn.classList.remove("rotating");
+      updateUI();
+      if (queue.length) flushQueue();
+    }, batch.length * 500);
+  }
+
+  form.addEventListener("submit", e => {
+    
+    if (!navigator.onLine) {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form));    
+      const q = loadQueue();
+      q.push(data);
+      saveQueue(q);
+      form.reset();
+      updateUI();
+      showSuccessPopup("Lead saved successfully.");
+      return;
+    }
+
+    // ONLINE
+    e.preventDefault();
+    form.target = "hidden_sf_target";
+
+    if (!form.querySelector('[name="oid"]')) {
+      const oid = document.createElement("input");
+      oid.type = "hidden";
+      oid.name = "oid";
+      oid.value = ACTIVE.ORG_ID;
+      form.appendChild(oid);
+    }
+
+    if (!form.querySelector('[name="retURL"]')) {
+      const r = document.createElement("input");
+      r.type = "hidden";
+      r.name = "retURL";
+      r.value = "about:blank";
+      form.appendChild(r);
+    }
+
+    form.submit();
+    form.reset();
+    showSuccessPopup("Lead submitted successfully.");
+  });
+
+  syncBtn.onclick = flushQueue;
+
+  autoToggle.onclick = () => {
+    autoSync = !autoSync;
+    localStorage.setItem(AUTO_KEY, autoSync);
+    autoToggle.classList.toggle("on", autoSync);
+    if (autoSync) flushQueue();
+  };
+
+  window.addEventListener("online", () => {
+    updateUI();
+    if (autoSync) flushQueue();
+  });
+
+  window.addEventListener("offline", updateUI);
+
+  autoToggle.classList.toggle("on", autoSync);
+  updateUI();
+})();
+function showSuccessPopup(msg) {
+  document.getElementById("successMsg").textContent = msg;
+  document.getElementById("successPopup").style.display = "flex";
+}
+
+function closePopup() {
+  document.getElementById("successPopup").style.display = "none";
+}
+
+function loadModels() {
+  const select = document.querySelector(
+    'select[name="Web_To_Lead_Enquiry_Model_Id__c"]'
+  );
+
+  const models = MODEL_CONFIG[SF_ENV];
+
+  models.forEach(model => {
+    const option = document.createElement("option");
+    option.value = model.id;
+    option.textContent = model.label;
+    select.appendChild(option);
+  });
+}
+
+loadModels();
+
+</script>
+<!-- Success Popup -->
+<div id="successPopup" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.4);
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+">
+  <div style="
+    background:#fff;
+    padding:24px 28px;
+    border-radius:16px;
+    max-width:320px;
+    text-align:center;
+    box-shadow:0 20px 40px rgba(0,0,0,.25);
+  ">
+    <h3 style="margin:0 0 8px;">Lead Submitted</h3>
+    <p id="successMsg" style="margin:0 0 16px; font-size:14px; color:#4b5563;">
+      Thank you. Our team will contact you shortly.
+    </p>
+    <button onclick="closePopup()" style="
+      background:#4f46e5;
+      color:#fff;
+      border:none;
+      border-radius:999px;
+      padding:10px 18px;
+      font-size:14px;
+      cursor:pointer;
+    ">
+      OK
+    </button>
+  </div>
+</div>
+
+</body>
+</html>
