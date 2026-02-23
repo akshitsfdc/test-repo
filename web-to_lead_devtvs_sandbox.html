@@ -3,15 +3,42 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Norton Lead Capture Form</title>
+<title>Norton Enquiry Form</title>
+<link rel="icon" type="image/svg+xml" href="assets/Norton_Stamp_Roundel_RGB.svg">
 
 <style>
 * { box-sizing: border-box; }
 
+:root {
+  --norton-black-1100: #010203;
+  --norton-black-1000: #2A2D32;
+  --norton-black-900:  #4A4D52;
+  --norton-black-800:  #6A6D72;
+  --norton-black-700:  #909297;
+  --norton-black-600:  #ADB1B4;
+  --norton-black-500:  #C1C3C4;
+  --norton-black-400:  #E0E1E2;
+  --norton-black-300:  #E8E9EA;
+  --norton-black-200:  #EFF0F1;
+  --norton-black-100:  #F7F7F8;
+  --norton-white:      #FFFFFF;
+
+  --info-500:   #278AE6;
+  --success-500:#41B631;
+  --warning-400:#EF9F00;
+  --error-400:  #D22316;
+
+  --accent-gold: #FEDB00;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-  background: linear-gradient(135deg, #f3f6ff, #e6ecff);
+  background: linear-gradient(
+    135deg,
+    var(--norton-black-100),
+    var(--norton-black-200)
+  );
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -31,9 +58,8 @@ h1 {
   text-align: center;
 }
 
-/* Card */
 .card {
-  background: #fff;
+  background: var(--norton-white);
   border-radius: 18px;
   padding: 22px;
   box-shadow:
@@ -54,7 +80,7 @@ h1 {
   align-items: center;
   gap: 10px;
   font-size: 12px;
-  color: #6b7280;
+  color: var(--norton-black-700);
 }
 
 .dot {
@@ -62,8 +88,8 @@ h1 {
   height: 10px;
   border-radius: 50%;
 }
-.dot.online { background: #22c55e; }
-.dot.offline { background: #ef4444; }
+.dot.online { background: var(--success-500); }
+.dot.offline { background: var(--error-400) }
 
 /* Toggle */
 .toggle {
@@ -92,15 +118,15 @@ h1 {
   left: 2px;
   transition: transform .2s;
 }
-.toggle-switch.on { background: #4f46e5; }
+.toggle-switch.on { background: var(--norton-black-1100); }
 .toggle-switch.on::after { transform: translateX(18px); }
 
-/* Form */
 label {
   display: block;
   font-size: 13px;
   margin-top: 14px;
   font-weight: 500;
+  color: var(--norton-black-900);
 }
 
 label.required::after {
@@ -116,7 +142,9 @@ select  {
   padding: 10px 12px;
   margin-top: 6px;
   border-radius: 10px;
-  border: 1px solid #d4d4d8;
+  border: 1px solid var(--norton-black-400);
+  background: var(--norton-white);
+  color: var(--norton-black-1100);
   font-size: 14px;
 }
 select {
@@ -132,8 +160,8 @@ select {
 input:focus,
 select:focus {
   outline: none;
-  border-color: #4f46e5;
-  box-shadow: 0 0 0 2px rgba(79,70,229,.25);
+  border-color: var(--norton-black-1100);
+  box-shadow: 0 0 0 2px rgba(1,2,3,.12);
 }
 
 /* Consent section */
@@ -170,21 +198,45 @@ select:focus {
 }
 
 .btn {
-  background: linear-gradient(135deg,#4f46e5,#6366f1);
-  color: #fff;
+  background: linear-gradient(
+    180deg,
+    #0A0B0C 0%,
+    #010203 60%,
+    #000000 100%
+  );
+  color: #ffffff;
   border: none;
-  border-radius: 999px;
-  padding: 12px 20px;
-  font-size: 15px;
-  font-weight: 500;
+  border-radius: 0px;
+  padding: 14px 36px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
   cursor: pointer;
+  box-shadow:
+    0 12px 30px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition: all 0.2s ease;
 }
-
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(1,2,3,.25);
+}
+.btn:active {
+  transform: translateY(0);
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.35),
+    inset 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
 /* Pending sync */
 .pending-bar {
   margin-top: 14px;
   font-size: 12px;
-  color: #1f2937;
+  color: var(--norton-black-800);
   display: none;
   align-items: center;
   gap: 8px;
@@ -193,7 +245,7 @@ select:focus {
 .sync-icon {
   width: 18px;
   height: 18px;
-  stroke: #000;
+  stroke: var(--norton-black-900);
   fill: none;
   stroke-width: 2;
   cursor: pointer;
@@ -206,21 +258,153 @@ select:focus {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+.lang-switch select {
+  font-size: 12px;
+  padding: 4px 10px;
+  height: 26px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  color: #374151;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 22px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%236b7280' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+}
+
+.lang-switch select:focus {
+  outline: none;
+  border-color: #4f46e5;
+}
+
+.logo-wrapper {
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.company-logo {
+  max-width: 260px;
+  width: auto;
+}
+@media (max-width: 480px) {
+  .company-logo {
+    max-width: 180px;
+  }
+}
+.section-header h2 {
+  color: var(--norton-black-1100);
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.section-underline {
+  width: 40px;
+  height: 3px;
+  background: var(--accent-gold);
+  border-radius: 3px;
+  margin-top: 6px;
+}
+.terms-section {
+  color: var(--norton-black-800);
+  font-size: 12px;
+}
+.popup-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(1, 2, 3, 0.6); /* Norton Black overlay */
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.popup-card {
+  background: var(--norton-white);
+  padding: 24px 28px;
+  border-radius: 18px;
+  max-width: 320px;
+  width: calc(100% - 32px);
+  text-align: center;
+  box-shadow: 0 24px 48px rgba(1, 2, 3, 0.35);
+}
+
+.popup-card h3 {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--success-500); /* ✔ Success green */
+}
+
+.popup-card p {
+  margin: 0 0 18px;
+  font-size: 14px;
+  color: var(--norton-black-800);
+}
+
+/* Norton primary button */
+.popup-btn {
+  background: linear-gradient(
+    180deg,
+    var(--norton-black-1000),
+    var(--norton-black-1100)
+  );
+  color: var(--norton-white);
+  border: none;
+  border-radius: 999px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.popup-btn:hover {
+  background: linear-gradient(
+    180deg,
+    var(--norton-black-900),
+    var(--norton-black-1100)
+  );
+}
+input[type="checkbox"] {
+  accent-color: var(--norton-black-1100);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
 </style>
 </head>
 
 <body>
 <div class="page-wrapper">
 
-<h1>Norton Lead Capture Form</h1>
-
+<div class="logo-wrapper">
+  <img
+    src="assets/Norton_Secondary_Lockup_Horizontal.svg"
+    alt="Norton Logo"
+    class="company-logo"
+  />
+</div>
 <div class="card">
 
   <div class="card-header">
-    <strong>Lead Details</strong>
+    <div class="section-header">
+      <h2 data-i18n="leadDetails">Details</h2>
+      <div class="section-underline"></div>
+    </div>
     <div class="status-row">
       <span id="dot" class="dot"></span>
       <span id="netText"></span>
+      <div class="lang-switch">
+        <select id="langSelect">
+          <option value="en">English</option>
+          <option value="fr">Français</option>
+          <option value="de">Deutsch</option>
+        </select>
+      </div>
       <div class="toggle">
         Auto-sync
         <div id="autoToggle" class="toggle-switch"></div>
@@ -233,44 +417,66 @@ select:focus {
     <!-- Salesforce identification -->
     <input type="hidden" name="Lead_Source_Detail__c" value="NORTON_WEB_TO_LEAD_CAPTURE_OFFLINE">    
 
-    <label>First Name</label>
+    <label data-i18n="firstName">First Name</label>
     <input name="first_name" type="text">
 
-    <label class="required">Last Name</label>
+    <label class="required" data-i18n="lastName">Last Name</label>
     <input name="last_name" type="text" required>
 
-    <label class="required">Email</label>
-    <input name="email" type="email" required>
+    <label class="required" data-i18n="email">Email</label>
+    <input name="email" type="text" required inputmode="email">
 
-    <label>Phone</label>
+    <label data-i18n="phone">Phone</label>
     <input name="phone" type="tel" pattern="^\+?[0-9]{7,15}$" maxlength="16" inputmode="tel">
 
-    <label >Enquiry Model</label>
+    <label data-i18n="postalCode">Postal Code</label>
+    <input
+      name="Location_Pin_Code__c"
+      type="text"
+      maxlength="10"
+      inputmode="text"
+      pattern="[A-Za-z0-9\s\-]{3,10}"
+      data-i18n-placeholder="postalHint"
+    >
+    <label data-i18n="enquiryModel">Enquiry Model</label>
     <select name="Web_To_Lead_Enquiry_Model_Id__c" >
-      <option value="">-- Select Product --</option>
+      <option value="" data-i18n="selectProduct">-- Select Product --</option>
     </select>
 
-    <label>Enquiry Type</label>
+    <label data-i18n="enquiryType">Enquiry Type</label>
     <select name="Enquiry_Type__c">
-      <option value="">-- Select Enquiry Type --</option>
-      <option value="Enquiry">Enquiry</option>
-      <option value="Waitlist">Waitlist</option>
+      <option value="" data-i18n="selectEnquiryType">-- Select Enquiry Type --</option>
+      <option value="Enquiry" data-i18n="enquiry">Enquiry</option>
+      <option value="Waitlist" data-i18n="waitlist">Waitlist</option>
     </select>
-
+    
     <div class="consent-section">
-      <div class="consent-title">Communication Preferences</div>
+      <div class="consent-title" data-i18n="commPref">Communication Preferences</div>
       <div class="consent-grid">
-        <label class="consent-item"><input type="checkbox" name="Meta_Emai_Consent__c" value="true"> Email</label>
-        <label class="consent-item"><input type="checkbox" name="Meta_Phone_Consent__c" value="true"> Phone</label>
+        <label class="consent-item"><input type="checkbox" name="Meta_Emai_Consent__c" value="true"><span data-i18n="email">Email</span></label>
+        <label class="consent-item"><input type="checkbox" name="Meta_Phone_Consent__c" value="true"><span data-i18n="phone">Phone</span></label>
         <label class="consent-item"><input type="checkbox" name="Meta_SMS_Consent__c" value="true"> SMS</label>
         <label class="consent-item"><input type="checkbox" name="Meta_WhatsApp_Consent__c" value="true"> WhatsApp</label>
         <label class="consent-item"><input type="checkbox" name="Meta_RCS_Consent__c" value="true"> RCS</label>
       </div>
     </div>
-
-    <div class="form-footer">
-      <button class="btn">Submit Lead</button>
+    <div class="terms-section" style="margin:14px 0; border-top:1px solid #e5e7eb;">
+      <label class="consent-item">
+        <input
+          type="checkbox"
+          id="termsAccepted"
+          required
+        >
+        <span data-i18n="termsText">
+          I have read and agree to the Terms & Conditions
+        </span>
+      </label>
     </div>
+    <div class="form-footer">
+      <button class="btn" data-i18n="submit">Submit Lead</button>
+    </div>
+    
+    <!-- <div style="margin:14px 0; border-top:1px solid #e5e7eb;"></div> -->
   </form>
 
   <div id="pendingBar" class="pending-bar">
@@ -290,7 +496,7 @@ select:focus {
 
 <script>
 /* ========= SALESFORCE ENV CONFIG ========= */
-const SF_ENV = "DEV"; 
+const SF_ENV = "UAT"; 
 
 const SF_CONFIG = {
    DEV: {
@@ -338,6 +544,16 @@ const ACTIVE = SF_CONFIG[SF_ENV];
 const WEB_TO_LEAD_URL =
   ACTIVE.BASE_URL + "/servlet/servlet.WebToLead?encoding=UTF-8";
 
+   function getPendingText(count) {
+    const langSelect = document.getElementById("langSelect");
+    const lang = langSelect ? langSelect.value : "en";
+
+    if (!window.I18N || !I18N[lang]) {
+      return `${count} offline record(s) pending`;
+    }
+
+    return I18N[lang].pending.replace("{count}", count);
+  }
 /* ========= OFFLINE + AUTO SYNC ========= */
 (() => {
   const QUEUE_KEY = "pendingSfLeads";
@@ -364,16 +580,22 @@ const WEB_TO_LEAD_URL =
     const online = navigator.onLine;
     dot.className = "dot " + (online ? "online" : "offline");
     netText.textContent = online ? "Online" : "Offline";
+    if (window.I18N) {
+      netText.textContent = online
+        ? I18N[document.getElementById("langSelect")?.value || "en"].online
+        : I18N[document.getElementById("langSelect")?.value || "en"].offline;
+    }
 
     const count = loadQueue().length;
     if (count > 0) {
       pendingBar.style.display = "flex";
-      pendingText.textContent = `${count} offline lead(s) pending`;
+      pendingText.textContent = getPendingText(count);
       syncBtn.style.display = online ? "inline" : "none";
     } else {
       pendingBar.style.display = "none";
     }
   }
+  window.__updateOfflineUI = updateUI;
 
   function sendLead(data, index) {
     const iframeName = "sf_target_" + Date.now() + "_" + index;
@@ -433,8 +655,27 @@ const WEB_TO_LEAD_URL =
     }, batch.length * 500);
   }
 
+  const emailInput = document.querySelector('input[name="email"]');
+
+  emailInput.addEventListener("input", function () {
+    this.setCustomValidity("");
+  });
+
   form.addEventListener("submit", e => {
     
+    const emailInput = form.querySelector('input[name="email"]');
+    const emailRegex =
+      /^(?!\.)(?!.*\.\.)([A-Za-z0-9._%+-]{1,64})@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+
+    if (!emailRegex.test(emailInput.value.trim())) {
+      e.preventDefault();
+      emailInput.focus();
+      emailInput.setCustomValidity("Please enter a valid email address");
+      emailInput.reportValidity();
+      return;
+    } else {
+      emailInput.setCustomValidity("");
+    }
     if (!navigator.onLine) {
       e.preventDefault();
       const data = Object.fromEntries(new FormData(form));    
@@ -443,7 +684,7 @@ const WEB_TO_LEAD_URL =
       saveQueue(q);
       form.reset();
       updateUI();
-      showSuccessPopup("Lead saved successfully.");
+      showSuccessPopup("offline");
       return;
     }
 
@@ -469,7 +710,7 @@ const WEB_TO_LEAD_URL =
 
     form.submit();
     form.reset();
-    showSuccessPopup("Lead submitted successfully.");
+    showSuccessPopup("online");
   });
 
   syncBtn.onclick = flushQueue;
@@ -491,8 +732,21 @@ const WEB_TO_LEAD_URL =
   autoToggle.classList.toggle("on", autoSync);
   updateUI();
 })();
-function showSuccessPopup(msg) {
-  document.getElementById("successMsg").textContent = msg;
+function showSuccessPopup(type) {
+  const lang = localStorage.getItem("lang") || "en";
+
+  const titleKey =
+    type === "offline" ? "successOfflineTitle" : "successOnlineTitle";
+
+  const messageKey =
+    type === "offline" ? "successOfflineMessage" : "successOnlineMessage";
+
+  document.getElementById("popupTitle").textContent =
+    I18N[lang][titleKey];
+
+  document.getElementById("successMsg").textContent =
+    I18N[lang][messageKey];
+
   document.getElementById("successPopup").style.display = "flex";
 }
 
@@ -518,41 +772,147 @@ function loadModels() {
 loadModels();
 
 </script>
-<!-- Success Popup -->
-<div id="successPopup" style="
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.4);
-  align-items:center;
-  justify-content:center;
-  z-index:9999;
-">
-  <div style="
-    background:#fff;
-    padding:24px 28px;
-    border-radius:16px;
-    max-width:320px;
-    text-align:center;
-    box-shadow:0 20px 40px rgba(0,0,0,.25);
-  ">
-    <h3 style="margin:0 0 8px;">Lead Submitted</h3>
-    <p id="successMsg" style="margin:0 0 16px; font-size:14px; color:#4b5563;">
-      Thank you. Our team will contact you shortly.
-    </p>
-    <button onclick="closePopup()" style="
-      background:#4f46e5;
-      color:#fff;
-      border:none;
-      border-radius:999px;
-      padding:10px 18px;
-      font-size:14px;
-      cursor:pointer;
-    ">
+<div id="successPopup" class="popup-overlay">
+  <div class="popup-card">
+    <h3 id="popupTitle"></h3>
+
+    <p id="successMsg"></p>
+
+    <button onclick="closePopup()" class="popup-btn" data-i18n="ok">
       OK
     </button>
   </div>
 </div>
+
+<script>
+  
+const I18N = {
+  en: {
+    title: "Norton Enquiry Form",
+    leadDetails: "Details",
+    autoSync: "Auto-sync",
+    firstName: "First Name",
+    lastName: "Last Name",
+    email: "Email",
+    phone: "Phone",
+    enquiryModel: "Enquiry Model",
+    enquiryType: "Enquiry Type",
+    selectProduct: "-- Select Product --",
+    selectEnquiryType: "-- Select Enquiry Type --",
+    enquiry: "Enquiry",
+    waitlist: "Waitlist",
+    commPref: "Communication Preferences",
+    submit: "Submit Enquiry",
+    online: "Online",
+    offline: "Offline",
+    pending: "{count} offline enquiry(s) pending",
+    postalCode: "Postal Code",
+    postalHint: "ZIP / PIN",
+    termsText: "I have read and agree to the Terms & Conditions",
+    successOnlineTitle: "Submitted",
+    successOnlineMessage: "Your enquiry has been submitted successfully.",
+    successOfflineTitle: "Saved Offline",
+    successOfflineMessage: "Your enquiry has been saved and will sync automatically when you're back online.",
+    ok: "OK"
+  },
+
+  fr: {
+    title: "Formulaire de demande Norton",
+    leadDetails: "Détails de la demande",
+    autoSync: "Auto-sync",
+    firstName: "Prénom",
+    lastName: "Nom",
+    email: "Email",
+    phone: "Téléphone",
+    enquiryModel: "Modèle de demande",
+    enquiryType: "Type de demande",
+    selectProduct: "-- Sélectionner un produit --",
+    selectEnquiryType: "-- Sélectionner le type --",
+    enquiry: "Demande",
+    waitlist: "Liste d’attente",
+    commPref: "Préférences de communication",
+    submit: "Soumettre la demande",
+    online: "En ligne",
+    offline: "Hors ligne",
+    pending: "{count} demande(s) hors ligne en attente",
+    postalCode: "Code postal",
+    postalHint: "Code postal",
+    termsText: "J’ai lu et j’accepte les conditions générales",
+    successOnlineTitle: "Envoyé",
+    successOnlineMessage: "Votre demande a été envoyée avec succès.",
+    successOfflineTitle: "Enregistré hors ligne",
+    successOfflineMessage: "Votre demande a été enregistrée et sera synchronisée automatiquement lorsque vous serez en ligne.",
+    ok: "OK"
+  },
+
+  de: {
+    title: "Norton Anfrageformular",
+    leadDetails: "Anfragedetails",
+    autoSync: "Auto-sync",
+    firstName: "Vorname",
+    lastName: "Nachname",
+    email: "E-Mail",
+    phone: "Telefon",
+    enquiryModel: "Anfragemodell",
+    enquiryType: "Anfragetyp",
+    selectProduct: "-- Produkt auswählen --",
+    selectEnquiryType: "-- Typ auswählen --",
+    enquiry: "Anfrage",
+    waitlist: "Warteliste",
+    commPref: "Kommunikationseinstellungen",
+    submit: "Anfrage absenden",
+    online: "Online",
+    offline: "Offline",
+    pending: "{count} Offline-Anfrage(n) ausstehend",
+    postalCode: "Postleitzahl",
+    postalHint: "PLZ",
+    termsText: "Ich habe die Allgemeinen Geschäftsbedingungen gelesen und akzeptiert",
+    successOnlineTitle: "Gesendet",
+    successOnlineMessage: "Ihre Anfrage wurde erfolgreich gesendet.",
+    successOfflineTitle: "Offline gespeichert",
+    successOfflineMessage: "Ihre Anfrage wurde gespeichert und wird automatisch synchronisiert, sobald Sie wieder online sind.",
+    ok: "OK"
+  }
+};
+
+  const langSelect = document.getElementById("langSelect");
+  const netText = document.getElementById("netText");
+
+  function applyLanguage(lang) {
+    document.querySelectorAll("[data-i18n]").forEach(el => {
+      el.textContent = I18N[lang][el.dataset.i18n];
+    });
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+      const key = el.dataset.i18nPlaceholder;
+      el.placeholder = I18N[lang][key] || "";
+    });
+    document.title = I18N[lang].title;
+    netText.textContent = navigator.onLine
+      ? I18N[lang].online
+      : I18N[lang].offline;
+
+    localStorage.setItem("lang", lang);
+  }
+
+  langSelect.addEventListener("change", e => {
+    applyLanguage(e.target.value);
+    if (window.__updateOfflineUI) {
+      window.__updateOfflineUI();
+    }
+  });
+
+  window.I18N = I18N;
+  const savedLang = localStorage.getItem("lang") || "en";
+  langSelect.value = savedLang;
+  applyLanguage(savedLang);
+
+  window.addEventListener("online", () => applyLanguage(langSelect.value));
+  window.addEventListener("offline", () => applyLanguage(langSelect.value));
+  if (window.__updateOfflineUI) {
+    window.__updateOfflineUI();
+  }
+  
+</script>
 
 </body>
 </html>
